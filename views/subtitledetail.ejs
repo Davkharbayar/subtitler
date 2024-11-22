@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <!-- Favicon -->
+       <link rel="icon" href="/favicon.ico" type="image/x-icon">
+   
+       <!-- CSS Stylesheet -->
+       <link rel="stylesheet" href="/css/styles.css">
+       <link rel="stylesheet" href="/css/videodetail.css">
+   
+       <!-- D3.js Library -->
+       <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Video Detail - Subtitle Creator</title>
+</head>
+<body>
+        <!-- SVG container for D3 background animation -->
+        <svg id="background-animation"></svg>
+        <main>
+            <div class="container">
+                <!-- Header -->
+                <header class="header">
+                    <h1>Subtext Studio</h1>
+                    <p> Automatically aligns text with video and audio timelines for perfect synchronization.</p>
+                </header>
+        
+                <button id="back-btn" class="back-button" onclick="goBackToList()">Back to list</button>
+                <!-- Video Detail Section -->
+                <div id="videoDetail" class="video-detail-container">
+                    <h3>Video Details
+                    </h3>
+                    <video id="videoPlayer" controls
+                        style="width: 300px; height: 400px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);">
+                        <source src="<%= video.subtitle_url %>" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <p>Subtitle File: <a href="<%= video.srt_url %>" download>Download SRT</a></p>
+                </div>
+        </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy;  MDR<%= new Date().getFullYear() %> AI-Powered CV Analysis Platform. All rights reserved.</p>
+        </div>
+    </footer>
+  </div>
+
+  <script>
+    function goBackToList() {
+        window.location.href = '/';
+    }
+</script>
+      <script src="/js/d3.js"></script>
+</body>
+</html>

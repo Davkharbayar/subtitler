@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=" Automatically aligns text with video and audio timelines for perfect synchronization.">
+
+
+       <!-- Basic Meta Tags -->
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <meta name="description" content=" Automatically aligns text with video and audio timelines for perfect synchronization.">
+   
+       <!-- Page Title -->
+       <title>Subtext Studio</title>
+   
+       <!-- Open Graph Meta Tags -->
+       <meta property="og:title" content="Subtext Studio" />
+       <meta property="og:description" content=" Automatically aligns text with video and audio timelines for perfect synchronization." />
+       <meta property="og:image" content="https://subtitler-58b2c21658a1.herokuapp.com/image/ogimage.jpeg" />
+       <meta property="og:image:width" content="1200" />
+       <meta property="og:image:height" content="630" />
+       <meta property="og:type" content="website" />
+       <meta property="og:url" content="https://subtitler-58b2c21658a1.herokuapp.com" />
+   
+       <!-- Twitter Card Meta Tags -->
+       <meta name="twitter:card" content=" subtitle creator">
+       <meta name="twitter:title" content="Subtext Studio">
+       <meta name="twitter:description" content=" Automatically aligns text with video and audio timelines for perfect synchronization.">
+       <meta name="twitter:image" content="https://subtitler-58b2c21658a1.herokuapp.com/image/ogimage.jpeg">
+       <meta name="twitter:site" content="@YourTwitterHandle">
+   
+       <!-- Canonical Link -->
+       <link rel="canonical" href="https://subtitler-58b2c21658a1.herokuapp.com">
+   
+       <!-- Favicon -->
+       <link rel="icon" href="/favicon.ico" type="image/x-icon">
+   
+       <!-- CSS Stylesheet -->
+       <link rel="stylesheet" href="/css/styles.css">
+   
+       <!-- D3.js Library -->
+       <script src="https://d3js.org/d3.v7.min.js"></script>
+
+</head>
+<body>
+    <!-- SVG container for D3 background animation -->
+    <svg id="background-animation"></svg>
+
+    <!-- Header for the application -->
+    <header class="header">
+        <h1>Subtext Studio</h1>
+        <p> Automatically aligns text with video and audio timelines for perfect synchronization.</p>
+    </header>
+
+    <!-- Main content area -->
+    <main>
+        <div class="container">
+            <h1>Upload Video/Audio to Create Subtitles</h1>
+            <form id="uploadForm" action="/api/subtitle/create" method="POST" enctype="multipart/form-data">
+              <div id="dropZone" class="drop-zone">
+                <p id="dropZoneText">Drag & Drop your file here or click to upload</p>
+                <input type="file" name="file" id="fileInput" accept="video/*,audio/*" required>
+              </div>
+              <button type="submit" id="createButton" disabled>Create Subtitle</button>
+            </form>
+            <div id="loading" class="loading" style="display: none;">
+              <p>Loading... Please wait.</p>
+              <div class="spinner"></div>
+            </div>
+
+          </div>
+
+          <div class="vid-list">
+            <% if (videoList && videoList.length) { %>
+              <% videoList.forEach(vid => { %>
+                <div class="vid-card" onclick="getVideoDetail('<%= vid.guid %>')">
+                  <div class="vid-thumbnail">
+                    <img 
+                      src="<%= vid.thumb_image %>" 
+                      data-static="<%= vid.thumb_image %>" 
+                      data-anim="<%= vid.anim_image %>" 
+                      alt="<%= vid.title %> thumbnail" 
+                      class="thumbnail-image"
+                    />
+                    <div class="play-button" onclick="event.stopPropagation(); location.href='/subtitle/<%= vid.guid %>'">
+                      <i class="fas fa-play-circle"></i>
+                    </div>
+                  </div>
+                  <p class="vid-detail">
+                    <i class="fas fa-calendar-alt"></i> <%= new Date(vid.created_at).toLocaleDateString() %>
+                  </p>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <p>No postings available at the moment.</p>
+            <% } %>
+          </div>
+    </main>
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy;  MDR<%= new Date().getFullYear() %> AI-Powered CV Analysis Platform. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const dropZoneText = document.getElementById('dropZoneText');
+        const createButton = document.getElementById('createButton');
+        const videoList = document.getElementById('videoList');
+        const loadingDetail = document.getElementById('loadingDetail');
+        const videoDetail = document.getElementById('videoDetail');
+        const videoInfo = document.getElementById('videoInfo');
+        const videoPlayer = document.getElementById('videoPlayer');
+    
+        dropZone.addEventListener('click', () => fileInput.click());
+    
+        dropZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropZone.classList.add('drag-over');
+        });
+    
+        dropZone.addEventListener('dragleave', () => {
+          dropZone.classList.remove('drag-over');
+        });
+    
+        dropZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+          fileInput.files = e.dataTransfer.files;
+          dropZone.classList.add('file-added');
+          dropZoneText.textContent = fileInput.files[0].name;
+          createButton.disabled = false;
+          updateDropZoneBackground();
+        });
+    
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files.length > 0) {
+            dropZone.classList.add('file-added');
+            dropZoneText.textContent = fileInput.files[0].name;
+            createButton.disabled = false;
+          } else {
+            dropZone.classList.remove('file-added');
+            dropZoneText.textContent = 'Drag & Drop your file here or click to upload';
+            createButton.disabled = true;
+          }
+          updateDropZoneBackground();
+        });
+    
+        function updateDropZoneBackground() {
+          if (fileInput.files.length > 0) {
+            dropZone.style.backgroundColor = 'rgba(0, 123, 255, 0.3)';
+          } else {
+            dropZone.style.backgroundColor = 'rgba(200, 200, 200, 0.3)';
+          }
+        }
+    
+        document.getElementById('uploadForm').addEventListener('submit', function () {
+          document.getElementById('loading').style.display = 'block';
+        });
+
+        function getVideoDetail(guid) {
+            window.location.href = '/subtitle/' + guid;
+        }
+
+        document.querySelectorAll('.vid-card').forEach(card => {
+        const img = card.querySelector('.thumbnail-image');
+
+        card.addEventListener('mouseenter', () => {
+            img.src = img.getAttribute('data-anim');
+        });
+
+        card.addEventListener('mouseleave', () => {
+            img.src = img.getAttribute('data-static');
+        });
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
+        const formData = new FormData(this);
+        
+        // Show the loading animation
+        document.getElementById('loading').style.display = 'block';
+        
+        // Example using fetch to submit the form data
+        fetch('/api/subtitle/create', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.id) {
+                getVideoDetail(data.id); // Call getVideoDetail with the received ID
+            } else {
+                console.error('Upload failed or unexpected response:', data);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            // Hide the loading animation after the request completes
+            document.getElementById('loading').style.display = 'none';
+        });
+    });
+
+      </script>
+    <script src="/js/d3.js"></script>
+</body>
+</html>

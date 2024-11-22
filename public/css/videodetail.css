@@ -1,0 +1,31 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    color: #f0f0f0;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+#back-btn {
+    margin-top: 30px    ;
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 1.0rem;
+    color: #ffffff;
+    background: linear-gradient(90deg, #007bff, #6610f2);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+#back-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #6610f2, #007bff);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+}
+
+
